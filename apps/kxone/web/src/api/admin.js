@@ -1,0 +1,15 @@
+import api from './index'
+
+export const getAdminSettings = params => api.get('/admin/settings', { params })
+export const updateAdminSettings = settings => api.put('/admin/settings', { settings })
+export const getChannelIntegrations = () => api.get('/channel-integrations')
+export const createChannelIntegration = data => api.post('/channel-integrations', data)
+export const updateChannelIntegration = (id, data) => api.put(`/channel-integrations/${id}`, data)
+export const deleteChannelIntegration = id => api.delete(`/channel-integrations/${id}`)
+export const getUsers = params => api.get('/admin/users', { params })
+export const createUser = data => api.post('/admin/users', data)
+export const updateUser = (id, data) => api.put(`/admin/users/${id}`, data)
+export const sendGroupRobotTest = () => api.post('/admin/group-robot/test')
+export const getGroupRobotHealth = () => api.get('/admin/group-robot/health')
+export const getDeletedLeads = params => api.get('/admin/deleted-leads', { params })
+export const restoreDeletedLead = (id, reason) => api.post(`/admin/deleted-leads/${id}/restore`, { reason })

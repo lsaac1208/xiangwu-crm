@@ -1,0 +1,19 @@
+[Unit]
+Description=Create an online-consistent KXOne SQLite backup
+After=kxone-server.service
+
+[Service]
+Type=oneshot
+User=kxone
+Group=kxone
+WorkingDirectory=/opt/kxone
+EnvironmentFile=/etc/kxone/kxone.env
+ExecStart=/opt/kxone/scripts/backup_sqlite_local.sh
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/kxone/data /opt/kxone/backups

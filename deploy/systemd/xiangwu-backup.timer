@@ -1,0 +1,12 @@
+[Unit]
+Description=Run Xiangwu platform backup every night
+
+[Timer]
+OnCalendar=*-*-* 03:20:00
+RandomizedDelaySec=20m
+Persistent=true
+Unit=xiangwu-backup.service
+
+[Install]
+WantedBy=timers.target
+

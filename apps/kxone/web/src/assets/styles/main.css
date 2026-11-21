@@ -1,0 +1,277 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--kx-color-canvas);
+  color: var(--kx-color-text);
+  font-size: var(--kx-font-14);
+  font-weight: 400;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.van-field {
+  --van-field-placeholder-text-color: var(--kx-color-text-muted);
+}
+
+button,
+a,
+input,
+select,
+textarea,
+[tabindex]:not([tabindex="-1"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: var(--kx-focus-width) solid var(--kx-color-focus);
+  outline-offset: var(--kx-focus-offset);
+}
+
+html {
+  scroll-padding-top: 80px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  top: var(--kx-space-2);
+  left: var(--kx-space-2);
+  transform: translateY(-160%);
+  padding: var(--kx-space-2) var(--kx-space-3);
+  border-radius: var(--kx-radius-2);
+  background: var(--kx-color-text);
+  color: var(--kx-color-surface);
+  font-weight: 700;
+  transition: transform var(--kx-motion-fast) var(--kx-ease-standard);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  clip-path: inset(50%) !important;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.page-container {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.content-wrapper {
+  padding: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--kx-color-text);
+  margin: 16px 0 12px;
+}
+
+.van-overlay {
+  background: var(--kx-dialog-scrim);
+}
+
+.van-popup,
+.van-dialog {
+  color: var(--kx-color-text);
+}
+
+.text-muted {
+  color: var(--kx-color-text-muted);
+}
+
+.text-primary {
+  color: var(--kx-color-brand);
+}
+
+.text-danger {
+  color: var(--kx-color-danger);
+}
+
+.text-success {
+  color: var(--kx-color-success);
+}
+
+@media (pointer: coarse) {
+  button,
+  a,
+  [role="button"],
+  select,
+  input:not([type="checkbox"]):not([type="radio"]) {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Legible status labels on both neutral and semantic surfaces. */
+.van-tag--default { --van-tag-default-color: var(--kx-color-text-secondary); }
+.van-tag--warning:not(.van-tag--plain) { color: var(--kx-color-text); background: var(--kx-color-warning-soft); }
+
+/* Shared controls also cover Vant overlays teleported outside the app shell. */
+.van-button { font-weight: 500; transition: background var(--kx-motion-fast), border-color var(--kx-motion-fast), box-shadow var(--kx-motion-fast); }
+.van-button--default { color: var(--kx-color-text-secondary); }
+.van-button--primary:not(.van-button--plain):not(:disabled):hover { background: var(--kx-color-brand-hover); border-color: var(--kx-color-brand-hover); }
+.van-button--plain.van-button--primary { background: var(--kx-color-brand-soft); }
+.van-dialog { width: min(480px, calc(100vw - 32px)); box-shadow: var(--kx-shadow-float); }
+.van-dialog__header { font-weight: 600; }
+.van-dialog__message { color: var(--kx-color-text-secondary); line-height: 1.7; overflow-wrap: anywhere; }
+.van-field__label { font-weight: 400; }
+.van-field__error-message { margin-top: var(--kx-space-1); }
+.van-cell-group__title { color: var(--kx-color-text); font-size: var(--kx-font-16); font-weight: 600; }
+.van-switch { flex-shrink: 0; }
+.van-toast { max-width: calc(100vw - 32px); line-height: 1.5; color: var(--kx-color-on-toast); }
+.van-toast--text, .van-toast--fail, .van-toast--success { width: max-content; max-width: min(420px, calc(100vw - 48px)); }
+.van-toast--fail, .van-toast--success { min-width: 120px; }
+.van-toast__text { max-height: 50vh; max-height: 50dvh; overflow-y: auto; overflow-wrap: anywhere; }
+button, select, input, textarea { accent-color: var(--kx-color-brand); }
+select { cursor: pointer; }
+textarea { resize: vertical; }
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea, .van-field__control { font-size: var(--kx-font-16); }
+}
+
+.crm-form .van-cell-group--inset { margin: 0; border: 1px solid var(--kx-color-border); border-radius: var(--kx-card-radius); }
+.crm-form .van-field { flex-direction: column; align-items: stretch; padding: var(--kx-space-3) var(--kx-space-4); }
+.crm-form .van-field::after { display: none; }
+.crm-form .van-field__label { width: auto; margin-bottom: var(--kx-space-2); font-size: var(--kx-font-13); color: var(--kx-color-text-secondary); }
+.crm-form input.van-field__control, .crm-form textarea.van-field__control {
+  min-height: var(--kx-control-current-height); padding: var(--kx-space-2) var(--kx-space-3);
+  border: 1px solid var(--kx-color-border-strong); border-radius: var(--kx-control-radius);
+  background: var(--kx-color-surface); line-height: 1.5; transition: border-color var(--kx-motion-fast);
+}
+.crm-form input.van-field__control:focus, .crm-form textarea.van-field__control:focus { border-color: var(--kx-color-brand); }
+.crm-form .van-field--error input.van-field__control, .crm-form .van-field--error textarea.van-field__control { border-color: var(--kx-color-danger); }
+.crm-form input.van-field__control:read-only { background: var(--kx-color-surface-subtle); }
+.crm-form textarea.van-field__control { min-height: 104px; }
+.crm-form .van-field__body { min-width: 0; }
+.crm-form .van-field__value { width: 100%; min-width: 0; }
+
+/* Shared material and picker treatment also reaches teleported Vant layers. */
+.van-popup:not(.van-toast) { box-shadow: var(--kx-shadow-float); }
+.van-popup--center:not(.van-toast) { border-radius: var(--kx-dialog-radius); }
+.van-picker__toolbar, .van-calendar__header { border-bottom: 1px solid var(--kx-color-border); }
+.van-calendar__header { box-shadow: none; }
+.van-picker__title, .van-calendar__header-title { font-size: var(--kx-font-16); font-weight: 600; }
+.van-picker__cancel { color: var(--kx-color-text-secondary); }
+.van-picker__confirm { font-weight: 500; }
+.van-picker__toolbar button { min-width: 44px; min-height: 44px; }
+.van-calendar__selected-day { border-radius: var(--kx-control-radius); }
+.van-search { background: transparent; }
+.van-search__content { border: 1px solid var(--kx-color-border); border-radius: var(--kx-control-radius); background: var(--kx-color-surface-subtle); }
+.van-cell__title, .van-cell__value { overflow-wrap: anywhere; }
+.van-tag { font-weight: 500; }
+.van-tag--primary:not(.van-tag--plain) { background: var(--kx-color-brand-soft); color: var(--kx-color-brand); }
+.van-tag--success:not(.van-tag--plain) { background: var(--kx-color-success-soft); color: var(--kx-color-success); }
+.van-tag--danger:not(.van-tag--plain) { background: var(--kx-color-danger-soft); color: var(--kx-color-danger); }
+.van-tag--warning:not(.van-tag--plain) { color: var(--kx-color-warning); }
+.van-dialog__footer .van-button { min-height: 48px; font-weight: 500; }
+.van-toast { border-radius: var(--kx-control-radius); }
+.van-empty__description { color: var(--kx-color-text-muted); }
+@media (max-width: 767px) {
+  .crm-form input, .crm-form textarea { scroll-margin-block: 80px 140px; }
+  .app-shell[data-keyboard-open="true"] .crm-mobile-submit { position: static; width: auto; margin-top: var(--kx-space-4); }
+}
+
+/* Mobile uses inset groups and quiet, native-sized controls. */
+@media (max-width: 767px) {
+  .van-nav-bar { --van-nav-bar-height: 52px; }
+  .van-nav-bar__title { font-size: var(--kx-mobile-heading-size); font-weight: 600; }
+  .van-nav-bar__left, .van-nav-bar__right { min-width: 44px; }
+  .van-nav-bar__arrow { font-size: 22px; }
+  .van-nav-bar__text { font-size: var(--kx-font-16); }
+  .mobile-task-nav { position: sticky; top: 0; z-index: 40; background: var(--kx-color-toolbar); }
+  .van-hairline--bottom::after { border-color: var(--kx-color-mobile-separator); }
+  .van-button { min-height: 44px; }
+  .van-button--primary { font-weight: 600; }
+  .van-search__content { border: 0; border-radius: var(--kx-mobile-control-radius); background: var(--kx-color-mobile-fill); }
+  .van-search .van-field { min-height: 44px; align-items: center; }
+  .van-search .van-field__left-icon { color: var(--kx-color-text-muted); }
+  .crm-form .van-cell-group--inset { border: 0; box-shadow: none; }
+  .crm-form .van-field { padding: var(--kx-space-3) var(--kx-space-4); }
+  .crm-form .van-field__label { margin-bottom: var(--kx-space-1); font-size: var(--kx-font-13); }
+  .crm-form .van-field:focus-within .van-field__label { color: var(--kx-color-brand); }
+  .crm-form input.van-field__control, .crm-form input.van-field__control:read-only {
+    padding: 0; border: 0; border-radius: var(--kx-radius-1); background: transparent;
+  }
+  .crm-form textarea.van-field__control {
+    border: 0; background: var(--kx-color-mobile-fill); border-radius: var(--kx-mobile-control-radius);
+  }
+  .crm-form .lead-source-select { border: 0; border-radius: var(--kx-mobile-control-radius); background: var(--kx-color-mobile-fill); }
+  .crm-form .van-field--error input.van-field__control { box-shadow: inset 0 -1px var(--kx-color-danger); }
+  .crm-form .van-field--error textarea.van-field__control { box-shadow: inset 0 0 0 1px var(--kx-color-danger); }
+  .crm-form .van-field:not(:last-child)::after {
+    display: block; left: var(--kx-space-4); right: 0; border-color: var(--kx-color-mobile-separator);
+  }
+  .van-popup--bottom { border-radius: var(--kx-mobile-sheet-radius) var(--kx-mobile-sheet-radius) 0 0; }
+  .van-picker__toolbar { min-height: 56px; border-color: var(--kx-color-mobile-separator); }
+  .van-picker__cancel, .van-picker__confirm { font-size: var(--kx-font-16); color: var(--kx-color-brand); }
+  .van-picker__confirm { font-weight: 600; }
+  .van-dialog { width: min(360px, calc(100vw - 48px)); overflow: hidden; }
+  .van-dialog__header { padding-top: var(--kx-space-6); font-size: var(--kx-mobile-heading-size); }
+  .van-dialog__message { padding: var(--kx-space-4) var(--kx-space-6) var(--kx-space-6); font-size: var(--kx-font-14); }
+  .van-dialog__footer .van-button { min-height: 50px; font-size: var(--kx-font-16); border-radius: 0; }
+  .van-dialog__cancel { color: var(--kx-color-brand); }
+  .van-dialog__confirm { font-weight: 600; }
+  .van-toast { border-radius: var(--kx-radius-4); }
+}
+@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  @media (max-width: 767px) {
+    .mobile-task-nav { background: var(--kx-color-mobile-material); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  }
+}
+@media (max-width: 767px) and (prefers-reduced-transparency: reduce) {
+  .mobile-task-nav { background: var(--kx-color-toolbar); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .app-shell .crm-mobile-submit { background: var(--kx-color-surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

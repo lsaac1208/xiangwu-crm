@@ -1,0 +1,36 @@
+[Unit]
+Description=KXOne asynchronous worker and CMS publisher
+After=network-online.target redis-server.service kxone-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kxone
+Group=kxone
+WorkingDirectory=/opt/kxone
+EnvironmentFile=/etc/kxone/kxone.env
+Environment=PATH=/opt/kxone/node/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+Environment=COREPACK_HOME=/opt/kxone/cache/corepack
+Environment=XDG_CACHE_HOME=/opt/kxone/cache
+ExecStartPre=/opt/kxone/scripts/check_production_env.sh worker
+ExecStart=/opt/kxone/bin/kxone-worker
+Restart=on-failure
+RestartSec=3s
+TimeoutStopSec=30s
+UMask=0027
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/opt/kxone/data /opt/kxone/cache /opt/kxone/site-rebuild
+
+[Install]
+WantedBy=multi-user.target

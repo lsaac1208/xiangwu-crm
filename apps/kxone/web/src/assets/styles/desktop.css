@@ -1,0 +1,293 @@
+.kx-desktop-page {
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--kx-color-canvas);
+}
+
+.kx-desktop-container {
+  width: min(var(--kx-page-max-width), 100%);
+  margin: 0 auto;
+}
+
+.kx-desktop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.kx-desktop-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.kx-desktop-title {
+  margin: 0;
+  color: var(--kx-color-text);
+  font-size: var(--kx-font-26);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+}
+
+.kx-desktop-subtitle {
+  margin: 4px 0 0;
+  color: var(--kx-color-text-secondary);
+  font-size: var(--kx-font-14);
+  line-height: 20px;
+}
+
+.kx-desktop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--kx-space-2);
+}
+
+.kx-desktop-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kx-space-2);
+  min-height: var(--kx-control-current-height);
+  min-width: 0;
+  padding: 0 var(--kx-space-3);
+  border: 1px solid var(--kx-color-border-strong);
+  border-radius: var(--kx-control-radius);
+  background: var(--kx-color-surface);
+  color: var(--kx-color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--kx-font-14);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background var(--kx-motion-fast), border-color var(--kx-motion-fast), color var(--kx-motion-fast);
+}
+
+.kx-desktop-button .van-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.kx-desktop-button:hover {
+  border-color: var(--kx-color-brand);
+  color: var(--kx-color-brand);
+}
+
+.kx-desktop-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.kx-desktop-button-primary {
+  border-color: var(--kx-color-brand);
+  background: var(--kx-color-brand);
+  color: var(--kx-color-surface);
+}
+
+.kx-desktop-button-primary:hover {
+  border-color: var(--kx-color-brand-hover);
+  background: var(--kx-color-brand-hover);
+  color: var(--kx-color-surface);
+}
+
+.kx-desktop-button-quiet {
+  background: var(--kx-color-surface-subtle);
+  color: var(--kx-color-text-secondary);
+}
+
+.kx-desktop-header .kx-desktop-button-quiet {
+  border-color: transparent;
+  background: transparent;
+}
+
+.kx-desktop-header .kx-desktop-button-quiet:hover {
+  border-color: var(--kx-color-brand);
+  background: var(--kx-color-brand-soft);
+}
+
+.kx-desktop-button-danger {
+  color: var(--kx-color-danger);
+}
+
+.kx-desktop-button-danger:hover {
+  border-color: var(--kx-color-danger);
+  background: var(--kx-color-danger-soft);
+  color: var(--kx-color-danger);
+}
+
+.kx-desktop-back-button {
+  align-self: flex-start;
+  gap: 4px;
+  height: auto;
+  margin-top: 5px;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  color: var(--kx-color-brand);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.kx-desktop-back-button:hover {
+  border: 0;
+  background: transparent;
+  color: var(--kx-color-brand-hover);
+  text-decoration: underline;
+}
+
+.kx-desktop-back-button .van-icon {
+  font-size: 18px;
+}
+
+.kx-desktop-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--kx-color-border);
+  border-radius: var(--kx-card-radius);
+  background: var(--kx-color-surface);
+}
+
+.kx-desktop-segment {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kx-space-1);
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--kx-space-1);
+  border-radius: var(--kx-control-radius);
+  background: var(--kx-color-segment);
+}
+
+.kx-desktop-segment button {
+  min-height: var(--kx-control-current-height);
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: var(--kx-radius-2);
+  background: transparent;
+  color: var(--kx-color-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--kx-font-14);
+}
+
+.kx-desktop-segment button:hover {
+  background: var(--kx-color-surface-subtle);
+  color: var(--kx-color-text);
+}
+
+.kx-desktop-segment button.active {
+  border-color: transparent;
+  background: var(--kx-color-segment-selected);
+  box-shadow: var(--kx-shadow-selected);
+  color: var(--kx-color-text);
+  font-weight: 600;
+}
+
+.kx-desktop-panel {
+  overflow: hidden;
+  border: 1px solid var(--kx-color-border);
+  border-radius: var(--kx-card-radius);
+  background: var(--kx-color-surface);
+}
+
+.kx-desktop-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px var(--kx-space-4);
+  border-bottom: 1px solid var(--kx-color-border);
+  background: var(--kx-color-surface);
+}
+
+.kx-desktop-panel-title {
+  margin: 0;
+  color: var(--kx-color-text);
+  font-size: var(--kx-font-16);
+  font-weight: 600;
+}
+
+.kx-desktop-panel-subtitle {
+  color: var(--kx-color-text-secondary);
+  font-size: 12px;
+}
+
+.kx-desktop-empty {
+  padding: 32px 12px;
+  color: var(--kx-color-text-muted);
+  font-size: var(--kx-font-14);
+  text-align: center;
+}
+
+.kx-desktop-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--kx-font-14);
+}
+
+.kx-desktop-table th {
+  height: 40px;
+  padding: 0 12px;
+  background: var(--kx-color-surface-subtle);
+  color: var(--kx-color-text-secondary);
+  font-size: var(--kx-font-13);
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.kx-desktop-table td {
+  height: 48px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--kx-color-border);
+  color: var(--kx-color-text);
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.kx-desktop-table tbody tr:hover td {
+  background: var(--kx-table-row-hover-bg);
+}
+
+.kx-desktop-link-button {
+  border: 0;
+  background: transparent;
+  color: var(--kx-color-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+  text-align: left;
+}
+
+.kx-desktop-link-button:hover {
+  color: var(--kx-color-brand);
+}
+
+@media (max-width: 900px) {
+  .kx-desktop-page {
+    padding: var(--kx-space-6);
+  }
+
+  .kx-desktop-header,
+  .kx-desktop-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .kx-desktop-actions {
+    justify-content: flex-start;
+  }
+}

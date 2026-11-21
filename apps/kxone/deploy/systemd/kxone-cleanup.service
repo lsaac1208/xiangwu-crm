@@ -1,0 +1,19 @@
+[Unit]
+Description=Clean orphan KXOne CMS staging directories and expired backups
+After=kxone-worker.service
+
+[Service]
+Type=oneshot
+User=kxone
+Group=kxone
+WorkingDirectory=/opt/kxone
+EnvironmentFile=/etc/kxone/kxone.env
+ExecStart=/opt/kxone/scripts/cleanup_cms_artifacts.sh
+UMask=0027
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/kxone/data /opt/kxone/backups

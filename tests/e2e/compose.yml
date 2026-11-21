@@ -1,0 +1,193 @@
+name: xiangwu-pipeline-e2e
+
+x-fixtures:
+  value-a: &gateway-hmac "e2e-only-gateway-hmac-key-000000000000"
+  value-b: &reconciliation-key "e2e-only-reconciliation-key-00000000000"
+  value-c: &wecom-secret "e2e-only-wecom-credential"
+  value-d: &field-encryption-key "0123456789abcdef0123456789abcdef"
+  value-e: &mobile-hash-key "abcdef0123456789abcdef0123456789"
+
+x-kxone-environment: &kxone-environment
+  SERVER_ENV: dev
+  SERVER_HOST: 0.0.0.0
+  SERVER_PORT: "8080"
+  SERVER_PUBLIC_BASE_URL: http://kxone-server:8080
+  DB_DRIVER: sqlite
+  DB_NAME: /data/kxone/kxone-e2e.db
+  DB_MAX_CONNS: "5"
+  DB_LOG_LEVEL: warn
+  MIGRATIONS_DIR: /app/migrations
+  # Every run starts with a brand-new named volume, so the server must create
+  # the disposable schema before its health check allows the runner to start.
+  ENABLE_AUTO_MIGRATE: "true"
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  WORKER_METRICS_ADDR: 0.0.0.0:9091
+  WORKER_CONCURRENCY: "2"
+  WECOM_CORP_ID: ww_e2e_only
+  WECOM_AGENT_ID: "1000002"
+  WECOM_SECRET: *wecom-secret
+  WECOM_API_BASE_URL: http://fake-wecom:8088
+  FIELD_ENCRYPTION_KEY: *field-encryption-key
+  MOBILE_HASH_KEY: *mobile-hash-key
+  AD_LEAD_DEFAULT_MANAGER_USERID: e2e-manager
+  AD_LEAD_GATEWAY_PUBLIC_BASE_URL: http://gateway:3000
+  AD_LEAD_GATEWAY_ENABLED: "true"
+  AD_LEAD_GATEWAY_HMAC_SECRET: *gateway-hmac
+  AD_LEAD_GATEWAY_SIGNATURE_TOLERANCE: "300"
+  CMS_ENABLED: "false"
+  CMS_MEDIA_DIR: /data/kxone/cms-media
+
+x-kxone-service: &kxone-service
+  build:
+    context: ../..
+    dockerfile: tests/e2e/kxone.Dockerfile
+  image: xiangwu-kxone-e2e:local
+  init: true
+  environment: *kxone-environment
+  volumes:
+    - kxone-data:/data/kxone
+  networks:
+    - e2e
+  stop_grace_period: 10s
+
+x-gateway-build: &gateway-build
+  context: ../..
+  dockerfile: tests/e2e/gateway.Dockerfile
+
+services:
+  redis:
+    image: redis:7.4.2-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    networks:
+      - e2e
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  fake-wecom:
+    build:
+      context: ../..
+      dockerfile: tests/e2e/fake-wecom/Dockerfile
+    image: xiangwu-fake-wecom-e2e:local
+    init: true
+    environment:
+      KXONE_UPSTREAM_URL: http://kxone-server:8080
+    networks:
+      - e2e
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8088/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  kxone-server:
+    <<: *kxone-service
+    command: ["/usr/local/bin/kxone-server"]
+    depends_on:
+      redis:
+        condition: service_healthy
+      fake-wecom:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/health"]
+      interval: 2s
+      timeout: 2s
+      retries: 60
+
+  kxone-worker:
+    <<: *kxone-service
+    command: ["/usr/local/bin/kxone-worker"]
+    depends_on:
+      redis:
+        condition: service_healthy
+      fake-wecom:
+        condition: service_healthy
+      kxone-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:9091/health"]
+      interval: 2s
+      timeout: 2s
+      retries: 60
+
+  gateway:
+    build: *gateway-build
+    image: xiangwu-gateway-e2e:local
+    init: true
+    environment:
+      NODE_ENV: test
+      HOST: 0.0.0.0
+      PORT: "3000"
+      DATABASE_PATH: /data/gateway/gateway-e2e.db
+      REDIS_URL: redis://redis:6379/1
+      KXONE_API_BASE_URL: http://fake-wecom:8088
+      KXONE_GATEWAY_HMAC_SECRET: *gateway-hmac
+      LEAD_PIPELINE_MODE: kxone-only
+      RECONCILIATION_HASH_KEY: *reconciliation-key
+      KXONE_REQUEST_TIMEOUT_MS: "5000"
+      LOG_LEVEL: warn
+      MASK_PHONE_IN_LOG: "true"
+    volumes:
+      - gateway-data:/data/gateway
+    networks:
+      - e2e
+    depends_on:
+      kxone-server:
+        condition: service_healthy
+      fake-wecom:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/readyz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 2s
+      retries: 60
+
+  e2e-runner:
+    build: *gateway-build
+    image: xiangwu-gateway-e2e:local
+    init: true
+    command: ["node", "/e2e/runner/pipeline.e2e.mjs"]
+    environment:
+      E2E_MODE: ${E2E_MODE:-quick}
+      KXONE_URL: http://kxone-server:8080
+      GATEWAY_URL: http://gateway:3000
+      FAKE_WECOM_URL: http://fake-wecom:8088
+      KXONE_DB_PATH: /e2e-data/kxone/kxone-e2e.db
+      GATEWAY_DB_PATH: /e2e-data/gateway/gateway-e2e.db
+      E2E_REPORT_PATH: /tmp/e2e-report.json
+      NODE_ENV: test
+      DATABASE_PATH: /e2e-data/gateway/gateway-e2e.db
+      REDIS_URL: redis://redis:6379/1
+      KXONE_API_BASE_URL: http://fake-wecom:8088
+      KXONE_GATEWAY_HMAC_SECRET: *gateway-hmac
+      LEAD_PIPELINE_MODE: kxone-only
+      RECONCILIATION_HASH_KEY: *reconciliation-key
+      KXONE_REQUEST_TIMEOUT_MS: "5000"
+      LOG_LEVEL: warn
+      MASK_PHONE_IN_LOG: "true"
+    volumes:
+      - kxone-data:/e2e-data/kxone
+      - gateway-data:/e2e-data/gateway
+    networks:
+      - e2e
+    depends_on:
+      fake-wecom:
+        condition: service_healthy
+      kxone-server:
+        condition: service_healthy
+      kxone-worker:
+        condition: service_healthy
+      gateway:
+        condition: service_healthy
+
+volumes:
+  kxone-data:
+  gateway-data:
+
+networks:
+  e2e:
+    internal: true

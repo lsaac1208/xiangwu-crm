@@ -1,0 +1,33 @@
+[Unit]
+Description=Xiangwu KXOne CRM and CMS API
+After=network-online.target redis-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=xiangwu
+Group=xiangwu
+WorkingDirectory=/opt/xiangwu/apps/kxone
+EnvironmentFile=/etc/xiangwu/kxone.env
+ExecStartPre=/opt/xiangwu/scripts/validate-production-env.sh kxone
+ExecStart=/opt/xiangwu/bin/kxone-server
+Restart=on-failure
+RestartSec=3s
+TimeoutStopSec=20s
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/xiangwu/kxone
+
+[Install]
+WantedBy=multi-user.target
+

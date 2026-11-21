@@ -1,0 +1,35 @@
+[Unit]
+Description=Xiangwu KXOne asynchronous worker and CMS publisher
+After=network-online.target redis-server.service kxone-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=xiangwu
+Group=xiangwu
+WorkingDirectory=/opt/xiangwu/apps/kxone
+EnvironmentFile=/etc/xiangwu/kxone.env
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/bin
+Environment=COREPACK_HOME=/var/cache/xiangwu/corepack
+Environment=XDG_CACHE_HOME=/var/cache/xiangwu
+ExecStartPre=/opt/xiangwu/scripts/validate-production-env.sh worker
+ExecStart=/opt/xiangwu/bin/kxone-worker
+Restart=on-failure
+RestartSec=3s
+TimeoutStopSec=30s
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/xiangwu /var/cache/xiangwu /opt/xiangwu/apps/site-rebuild
+
+[Install]
+WantedBy=multi-user.target

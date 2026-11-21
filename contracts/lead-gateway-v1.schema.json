@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kxone.local/contracts/lead-gateway-v1.schema.json",
+  "title": "KXOne Gateway Lead v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "source",
+    "phone",
+    "leadCreatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "source": { "enum": ["baidu", "tencent", "xiaohongshu", "douyin", "form", "manual"] },
+    "externalLeadId": { "type": "string", "maxLength": 255 },
+    "dedupeKey": { "type": "string", "maxLength": 255 },
+    "accountName": { "type": "string" },
+    "customerName": { "type": "string", "maxLength": 255 },
+    "phone": { "type": "string", "maxLength": 64 },
+    "wechat": { "type": "string", "maxLength": 255 },
+    "region": { "type": "string" },
+    "ipLocation": { "type": "string" },
+    "campaignName": { "type": "string" },
+    "adgroupName": { "type": "string" },
+    "creativeName": { "type": "string" },
+    "formName": { "type": "string" },
+    "pageName": { "type": "string" },
+    "pageUrl": { "type": "string" },
+    "statusOrTag": { "type": "string" },
+    "leadCreatedAt": { "type": "string" }
+  },
+  "anyOf": [
+    { "properties": { "externalLeadId": { "minLength": 1 } } },
+    { "properties": { "dedupeKey": { "minLength": 1 } } }
+  ]
+}

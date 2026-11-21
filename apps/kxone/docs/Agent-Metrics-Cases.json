@@ -1,0 +1,323 @@
+{
+ "version": "agent-metrics-cases-v2",
+ "fixture": "Agent-Evaluation-Fixture.json",
+ "rules": "固定指标模式验收：每题 3 次独立会话；数字以服务端表格对照独立预期，模型解读不得含数字（客户#编号除外）；任何运行失败、指标选错或敏感片段泄露即失败。",
+ "cases": [
+  {
+   "id": "M08",
+   "origin": "A08",
+   "repeat": 3,
+   "turns": [
+    "各员工实际记录了多少条跟进？按操作人统计，不要按客户目前归属。"
+   ],
+   "expect": [
+    {
+     "metrics": [
+      "followup_by_actor"
+     ],
+     "key": "操作人",
+     "rows": {
+      "员工乙": {
+       "跟进条数": 6
+      },
+      "小宇": {
+       "跟进条数": 1
+      }
+     }
+    }
+   ],
+   "dataset": "gold-v1"
+  },
+  {
+   "id": "M13",
+   "origin": "A13",
+   "repeat": 3,
+   "turns": [
+    "客户#2 有多个历史回访计划，目前普通待办是否算多项？"
+   ],
+   "expect": [
+    {
+     "metrics": [
+      "lead_followup_status"
+     ],
+     "key": "客户",
+     "rows": {
+      "客户#2": {
+       "当前普通待办数": 0,
+       "当前普通回访资格": "否"
+      }
+     }
+    }
+   ],
+   "dataset": "gold-v1"
+  },
+  {
+   "id": "M21",
+   "origin": "A21",
+   "repeat": 3,
+   "turns": [
+    "跟进里提到费用问题的线索有哪些？是否足以证明费用造成流失？"
+   ],
+   "expect": [
+    {
+     "metrics": [
+      "followup_keyword"
+     ],
+     "params": {
+      "keyword": "费用"
+     },
+     "summary": {
+      "匹配跟进记录": 3,
+      "涉及线索": 2,
+      "其中当前已成交线索": 1
+     }
+    }
+   ],
+   "dataset": "gold-v1"
+  },
+  {
+   "id": "M26",
+   "origin": "A26/好学校追问",
+   "repeat": 3,
+   "turns": [
+    "先比较所有来源成交表现。",
+    "然后排除转介绍。",
+    "最后只看好学校，并按当前负责人拆开。"
+   ],
+   "expect": [
+    {
+     "metrics": [
+      "source_performance"
+     ],
+     "key": "来源",
+     "rows": {
+      "好学校": {
+       "线索数": 2
+      },
+      "转介绍": {
+       "线索数": 1
+      }
+     }
+    },
+    {
+     "metrics": [
+      "source_performance"
+     ],
+     "key": "来源",
+     "rows": {
+      "好学校": {
+       "线索数": 2
+      }
+     },
+     "absent": [
+      "转介绍"
+     ]
+    },
+    {
+     "metrics": [
+      "owner_current"
+     ],
+     "key": "当前归属",
+     "rows": {
+      "小宇": {
+       "线索数": 1
+      },
+      "员工乙": {
+       "线索数": 1
+      }
+     },
+     "row_count": 2
+    }
+   ],
+   "dataset": "gold-v1"
+  },
+  {
+   "id": "D01",
+   "dataset": "daily-v1",
+   "repeat": 3,
+   "turns": [
+    "你好"
+   ],
+   "expect": [
+    {
+     "no_privacy_rejection": true,
+     "metrics": [],
+     "answer": [
+      "你好"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "D02",
+   "dataset": "daily-v1",
+   "repeat": 3,
+   "turns": [
+    "上周共有几条线索进来"
+   ],
+   "expect": [
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "lead_count",
+      "daily_new_leads"
+     ],
+     "answer_prefix": "上周",
+     "answer": [
+      "5 条"
+     ],
+     "params": {
+      "date_from": "{last_monday}",
+      "date_to": "{last_sunday}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "D03",
+   "dataset": "daily-v1",
+   "repeat": 3,
+   "turns": [
+    "本月哪个来源最多"
+   ],
+   "expect": [
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "source_performance"
+     ],
+     "answer": [
+      "好学校",
+      "4 条"
+     ],
+     "params": {
+      "date_from": "{month_first}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "D04",
+   "dataset": "daily-v1",
+   "repeat": 3,
+   "turns": [
+    "昨天新增多少"
+   ],
+   "expect": [
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "lead_count",
+      "daily_new_leads"
+     ],
+     "answer_prefix": "昨天",
+     "answer": [
+      "2 条"
+     ],
+     "params": {
+      "date_from": "{yesterday}",
+      "date_to": "{yesterday}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "D05",
+   "dataset": "daily-v1",
+   "repeat": 3,
+   "turns": [
+    "谁的待办最多"
+   ],
+   "expect": [
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "followup_sla"
+     ],
+     "answer": [
+      "「员工乙」最多",
+      "3 项"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "D06",
+   "dataset": "daily-v1",
+   "repeat": 3,
+   "turns": [
+    "这个月成交了几单"
+   ],
+   "expect": [
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "deal_count",
+      "overview"
+     ],
+     "answer": [
+      "2 单"
+     ],
+     "params": {
+      "date_from": "{month_first}"
+     }
+    }
+   ]
+  },
+  {
+   "id": "D07",
+   "dataset": "daily-v1",
+   "repeat": 3,
+   "turns": [
+    "上周共有几条线索进来？",
+    "那哪个来源最多？",
+    "按负责人拆开"
+   ],
+   "expect": [
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "lead_count",
+      "daily_new_leads"
+     ],
+     "answer_prefix": "上周",
+     "answer": [
+      "5 条"
+     ]
+    },
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "source_performance"
+     ],
+     "answer_prefix": "上周",
+     "answer": [
+      "「好学校」最多",
+      "2 条"
+     ],
+     "params": {
+      "date_from": "{last_monday}",
+      "date_to": "{last_sunday}"
+     }
+    },
+    {
+     "no_privacy_rejection": true,
+     "metrics": [
+      "owner_current"
+     ],
+     "answer_prefix": "上周",
+     "answer": [
+      "员工乙 3 条",
+      "小宇 1 条",
+      "公海 1 条"
+     ],
+     "params": {
+      "date_from": "{last_monday}",
+      "date_to": "{last_sunday}"
+     }
+    }
+   ]
+  }
+ ],
+ "daily_rules": "日常口语题（dataset daily-v1，Agent-Daily-Fixture.json）：开头一句为服务端模板直接回答，须含预期数字；运行必须 completed、不得出现 provider_privacy_rejection（复现短联系方式误拦）；{last_monday}/{last_sunday}/{month_first}/{today}/{yesterday} 由驱动按上海日期展开。"
+}

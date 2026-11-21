@@ -1,0 +1,15 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exclude third-party dependencies and generated local artifacts"
+paths = [
+  '''(^|/)\.git/''',
+  '''(^|/)node_modules/''',
+  '''(^|/)dist/''',
+  '''(^|/)\.astro/''',
+  '''(^|/)coverage/''',
+  '''^\.runtime/''',
+  '''^\.runtime-doc-manual/''',
+  '''^deliverables/'''
+]

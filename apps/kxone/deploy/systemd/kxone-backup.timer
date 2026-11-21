@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the KXOne SQLite backup every night
+
+[Timer]
+OnCalendar=*-*-* 03:20:00
+RandomizedDelaySec=20m
+Persistent=true
+Unit=kxone-backup.service
+
+[Install]
+WantedBy=timers.target

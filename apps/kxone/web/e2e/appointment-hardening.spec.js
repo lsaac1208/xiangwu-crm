@@ -1,0 +1,87 @@
+import { randomUUID } from 'node:crypto'
+import { test, expect } from '@playwright/test'
+
+const requireOK = async response => { expect(response.ok(), await response.text()).toBeTruthy(); return response.json() }
+const businessDay = offset => new Date(Date.now() + offset * 86400000 + 8 * 3600000).toISOString().slice(0, 10)
+const claimLead = async (page, name) => {
+  const { lead } = await requireOK(await page.request.post('/api/leads', { headers: { 'Idempotency-Key': randomUUID() }, data: { customer_name: name, customer_mobile: '13912345678', source_channel: '好学校', star_rating: 5 } }))
+  await requireOK(await page.request.post(`/api/leads/${lead.id}/assign`, { data: { sales_userid: 'manager_001' } }))
+  await requireOK(await page.request.post(`/api/leads/${lead.id}/claim`))
+  return lead
+}
+
+for (const width of [375, 1440]) {
+  test(`真实预约创建、冲突恢复、转派领取、取消再预约 ${width}`, async ({ page }) => {
+    test.setTimeout(90000)
+    await page.setViewportSize({ width, height: 1000 })
+    await page.request.get('/test-session')
+    const day = businessDay(width === 375 ? 3 : 5)
+    const lead = await claimLead(page, `预约闭环${width}`)
+    await page.goto(`/leads/${lead.id}/appointment`)
+    await page.getByLabel('开始时间', { exact: true }).fill(`${day}T10:00`)
+    await page.getByLabel('预计结束', { exact: true }).fill(`${day}T11:00`)
+    await page.getByLabel('交接说明', { exact: true }).fill('真实隔离接口预约交接')
+    await page.getByRole('button', { name: '提交预约，等待主管分配' }).click()
+    await expect(page).toHaveURL(/\/appointments$/)
+    let appointments = (await requireOK(await page.request.get('/api/appointments', { params: { lead_id: lead.id } }))).appointments
+    const appointment = appointments[0]
+    expect(new Date(appointment.start_at).getUTCHours()).toBe(2)
+    await page.goto('/appointments')
+    await page.getByLabel('选择日程日期').fill(day)
+    let card = page.locator('.appointment-card').filter({ has: page.getByRole('heading', { name: `预约闭环${width}`, exact: true }) })
+    await card.getByRole('button', { name: '分配谈单师', exact: true }).click()
+    await page.getByRole('radio', { name: 'closer_001', exact: true }).click()
+    await page.getByRole('button', { name: '确认安排', exact: true }).click()
+    await expect(card.getByRole('button', { name: '改期', exact: true })).toBeVisible()
+    const other = await claimLead(page, `预约冲突${width}`)
+    const booked = (await requireOK(await page.request.post('/api/appointments', { data: { lead_id: other.id, start_at: `${day}T14:00:00+08:00`, end_at: `${day}T15:00:00+08:00`, campus: '襄阳校区', handoff_notes: '冲突验证' } }))).appointment
+    await requireOK(await page.request.post(`/api/appointments/${booked.id}/assign-closer`, { data: { closer_userid: 'closer_001', expected_version: booked.version } }))
+    await card.getByRole('button', { name: '改期', exact: true }).click()
+    // Vant popup uses its aria-label even on versions that do not emit role=dialog.
+    const popup = page.locator('[aria-label="预约改期"]')
+    await popup.getByLabel('开始时间', { exact: true }).fill(`${day}T14:00`)
+    await popup.getByLabel('结束时间', { exact: true }).fill(`${day}T15:00`)
+    await popup.getByLabel('改期原因', { exact: true }).fill('客户调整到校时间')
+    await popup.getByRole('button', { name: '确认改期', exact: true }).click()
+    await expect(popup.getByText(/该时段已有冲突/)).toBeVisible()
+    await popup.getByLabel('开始时间', { exact: true }).fill(`${day}T16:00`)
+    await popup.getByLabel('结束时间', { exact: true }).fill(`${day}T17:00`)
+    await expect(popup.getByLabel('改期原因', { exact: true })).toHaveValue('客户调整到校时间')
+    await popup.getByRole('button', { name: '确认改期', exact: true }).click()
+    await expect(popup).toBeHidden()
+    await requireOK(await page.request.post(`/api/leads/${lead.id}/reassign`, { data: { sales_userid: 'manager_002', remark: '预约随线索交接' } }))
+    await page.reload()
+    await page.getByLabel('选择日程日期').fill(day)
+    card = page.locator('.appointment-card').filter({ has: page.getByRole('heading', { name: `预约闭环${width}`, exact: true }) })
+    await expect(card.getByText(/待.*领取/)).toBeVisible()
+    await expect(card.getByRole('button', { name: '确认到访并交付' })).toHaveCount(0)
+    await page.request.get('/test-session?user=manager_002')
+    await requireOK(await page.request.post(`/api/leads/${lead.id}/claim`))
+    await page.reload()
+    await page.getByLabel('选择日程日期').fill(day)
+    await expect(card.getByRole('button', { name: '确认到访并交付' })).toBeVisible()
+    appointments = (await requireOK(await page.request.get('/api/appointments', { params: { lead_id: lead.id } }))).appointments
+    expect(appointments[0].id).toBe(appointment.id)
+    expect(appointments[0].inviter_userid).toBe('manager_002')
+    expect(appointments[0].closer_userid).toBe('closer_001')
+    expect(appointments[0].original_creator_userid).toBe('manager_001')
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBeTruthy()
+    await page.screenshot({ path: `/tmp/crm-batch3-appointment-${width}.png`, fullPage: true })
+    await card.getByRole('button', { name: '取消', exact: true }).click()
+    await page.locator('[aria-label="预约状态"]').getByLabel('原因', { exact: true }).fill('客户改日，验证重新预约')
+    await page.getByRole('button', { name: '确认提交', exact: true }).click()
+    await expect(card).toHaveCount(0)
+    await page.goto(`/leads/${lead.id}`)
+    if (width === 375) await page.getByRole('button', { name: '更多线索操作' }).click()
+    await expect(page.getByRole('button', { name: /创建预约/ }).first()).toBeVisible()
+    await page.getByRole('button', { name: /创建预约/ }).first().click()
+    await expect(page.getByRole('heading', { name: '创建预约单' })).toBeVisible()
+    await page.getByLabel('开始时间', { exact: true }).fill(`${day}T10:00`)
+    await page.getByLabel('预计结束', { exact: true }).fill(`${day}T11:00`)
+    await page.getByLabel('交接说明', { exact: true }).fill('取消后重新预约')
+    await page.getByRole('button', { name: '提交预约，等待主管分配' }).click()
+    await expect(page).toHaveURL(/\/appointments$/)
+    await expect(page.getByRole('heading', { name: '当前预约', exact: true })).toHaveCount(0)
+    await page.screenshot({ path: `/tmp/crm-batch3-rebook-${width}.png`, fullPage: true })
+  })
+}

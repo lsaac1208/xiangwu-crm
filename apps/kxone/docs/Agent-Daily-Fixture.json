@@ -1,0 +1,30 @@
+{
+  "version": "agent-daily-fixture-v1",
+  "dataset": "daily-v1",
+  "base": "Agent-Evaluation-Fixture.json",
+  "purpose": "日常口语验收：在 gold-v1 七条线索基础上，按运行当天相对日期追加线索；含短联系方式（*、3位数字202、无）复现 2026-10-14 生产误拦。",
+  "relative_time": "@rel:<anchor>+<天数> HH:MM，anchor 为 today/yesterday/last_monday（上周一）/month_first（本月1日），上海时间。验收须在周三至周日且本月3日之后运行，保证“昨天”“上周”“本月”互不交叉越界。",
+  "tables": {
+    "leads": [
+      {"id": 8, "lead_no": "TEST-0008", "customer_name": "测试客户八", "customer_mobile": "*", "customer_wechat": "无", "source_channel": "好学校", "star_rating": 3, "status": "following", "business_stage": "invitation", "ownership_state": "private", "result_status": "active", "current_owner_user_id": "sales-a", "current_owner_role": "inviter", "owner_user_id": "sales-a", "created_at": "@rel:last_monday+1 10:00", "current_owner_started_at": "@rel:last_monday+1 10:00", "next_followup_due_at": "@rel:today+1 10:00", "deal_amount": 0, "refund_amount": 0, "payment_status": "unpaid"},
+      {"id": 9, "lead_no": "TEST-0009", "customer_name": "测试客户九", "customer_mobile": "202", "customer_wechat": "*", "source_channel": "抖音直播", "star_rating": 2, "status": "following", "business_stage": "invitation", "ownership_state": "private", "result_status": "active", "current_owner_user_id": "sales-b", "current_owner_role": "inviter", "owner_user_id": "sales-b", "created_at": "@rel:last_monday+3 10:00", "current_owner_started_at": "@rel:last_monday+3 10:00", "next_followup_due_at": "@rel:today+1 11:00", "deal_amount": 0, "refund_amount": 0, "payment_status": "unpaid"},
+      {"id": 10, "lead_no": "TEST-0010", "customer_name": "测试客户十", "customer_mobile": "无", "customer_wechat": "", "source_channel": "好学校", "star_rating": 4, "status": "following", "business_stage": "negotiation", "ownership_state": "private", "result_status": "active", "current_owner_user_id": "sales-a", "current_owner_role": "inviter", "owner_user_id": "sales-a", "created_at": "@rel:last_monday+5 15:00", "current_owner_started_at": "@rel:last_monday+5 15:00", "next_followup_due_at": "@rel:yesterday+0 18:00", "deal_amount": 0, "refund_amount": 0, "payment_status": "unpaid"},
+      {"id": 11, "lead_no": "TEST-0011", "customer_name": "测试客户十一", "customer_mobile": "13900139011", "customer_wechat": "daily_parent_0011", "source_channel": "好学校", "star_rating": 5, "status": "converted", "business_stage": "finished", "ownership_state": "private", "result_status": "converted", "current_owner_user_id": "sales-b", "current_owner_role": "inviter", "owner_user_id": "sales-b", "created_at": "@rel:yesterday+0 09:00", "current_owner_started_at": "@rel:yesterday+0 09:00", "converted_at": "@rel:yesterday+0 15:00", "deal_amount": 5000, "refund_amount": 0, "payment_status": "paid"},
+      {"id": 12, "lead_no": "TEST-0012", "customer_name": "测试客户十二", "customer_mobile": "13900139012", "customer_wechat": "", "source_channel": "抖音直播", "star_rating": 3, "status": "following", "business_stage": "invitation", "ownership_state": "private", "result_status": "active", "current_owner_user_id": "sales-b", "current_owner_role": "inviter", "owner_user_id": "sales-b", "created_at": "@rel:yesterday+0 11:00", "current_owner_started_at": "@rel:yesterday+0 11:00", "next_followup_due_at": "@rel:today+2 10:00", "deal_amount": 0, "refund_amount": 0, "payment_status": "unpaid"},
+      {"id": 13, "lead_no": "TEST-0013", "customer_name": "测试客户十三", "customer_mobile": "13900139013", "customer_wechat": "daily_parent_0013", "source_channel": "好学校", "star_rating": 5, "status": "converted", "business_stage": "finished", "ownership_state": "private", "result_status": "converted", "current_owner_user_id": "sales-a", "current_owner_role": "inviter", "owner_user_id": "sales-a", "created_at": "@rel:month_first+0 10:00", "current_owner_started_at": "@rel:month_first+0 10:00", "converted_at": "@rel:month_first+1 11:00", "deal_amount": 8000, "refund_amount": 0, "payment_status": "paid"}
+    ],
+    "lead_activity_records": [
+      {"id": 2, "lead_id": 9, "activity_type": "update", "actor_user_id": "manager-a", "actor_role": "manager", "from_value_json": "{\"customer_mobile_masked\":\"*\"}", "to_value_json": "{\"customer_mobile_masked\":\"202\"}", "metadata_json": "{\"test\":true}", "created_at": "@rel:last_monday+3 12:00"}
+    ]
+  },
+  "forbidden_provider_payload_fragments": ["测试客户八", "测试客户九", "测试客户十", "测试客户十一", "测试客户十二", "测试客户十三", "13900139011", "13900139012", "13900139013", "daily_parent_0011", "daily_parent_0013"],
+  "expected": {
+    "last_week_new_leads": 5,
+    "last_week_top_source": ["好学校", 2],
+    "last_week_by_owner": {"员工乙": 3, "小宇": 1, "公海": 1},
+    "this_month_top_source": ["好学校", 4],
+    "yesterday_new_leads": 2,
+    "todo_top_owner": ["员工乙", 3],
+    "this_month_deals": 2
+  }
+}

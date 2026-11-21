@@ -1,0 +1,3 @@
+-- Baseline marker for existing KXOne installations.
+-- Current production schema was created before versioned SQL migrations were
+-- introduced. New schema changes must be added as subsequent migration files.

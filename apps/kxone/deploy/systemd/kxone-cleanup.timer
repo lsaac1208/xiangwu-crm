@@ -1,0 +1,11 @@
+[Unit]
+Description=Run safe KXOne CMS artifact cleanup every day
+
+[Timer]
+OnCalendar=*-*-* 04:10:00
+RandomizedDelaySec=20m
+Persistent=true
+Unit=kxone-cleanup.service
+
+[Install]
+WantedBy=timers.target

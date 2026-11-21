@@ -1,0 +1,5 @@
+# Production observations are byte-exact evidence. Do not normalize or flag
+# whitespace that is part of the captured server file.
+deploy/hosts/203.0.113.51/observed/** -text -whitespace
+apps/kxone/cms-web/auto-imports.d.ts linguist-generated=true
+apps/kxone/cms-web/components.d.ts linguist-generated=true

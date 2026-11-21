@@ -1,0 +1,24 @@
+-- +kxone dialect sqlite
+CREATE TABLE ai_conversations (id varchar(64) PRIMARY KEY, account_id bigint NOT NULL, title text, created_at datetime, updated_at datetime);
+CREATE INDEX idx_ai_conversations_account ON ai_conversations(account_id,updated_at);
+CREATE TABLE ai_messages (id varchar(64) PRIMARY KEY, conversation_id varchar(64) NOT NULL, run_id varchar(64), role text, content text, blocks_json text, status text, created_at datetime);
+CREATE INDEX idx_ai_messages_conversation ON ai_messages(conversation_id,created_at);
+CREATE INDEX idx_ai_messages_run ON ai_messages(run_id);
+CREATE TABLE ai_runs (id varchar(64) PRIMARY KEY, conversation_id varchar(64) NOT NULL, account_id bigint NOT NULL, request_id varchar(128), auth_version bigint, status text, model text, rule_version bigint, rules text, error text, snapshot_at datetime, created_at datetime, finished_at datetime);
+CREATE UNIQUE INDEX idx_ai_request ON ai_runs(account_id,request_id);
+CREATE INDEX idx_ai_runs_conversation ON ai_runs(conversation_id,created_at);
+CREATE INDEX idx_ai_runs_status ON ai_runs(status);
+CREATE TABLE ai_results (id varchar(64) PRIMARY KEY, run_id varchar(64) NOT NULL, data text, created_at datetime);
+CREATE INDEX idx_ai_results_run ON ai_results(run_id);
+CREATE TABLE ai_events (seq INTEGER PRIMARY KEY AUTOINCREMENT, run_id varchar(64) NOT NULL, type text, data text, created_at datetime);
+CREATE INDEX idx_ai_events_run ON ai_events(run_id,seq);
+CREATE TABLE ai_settings (id bigint PRIMARY KEY, enabled numeric, budget_micro bigint, base_url text, model text, key_ciphertext text, input_price_micro bigint, output_price_micro bigint, price_version text, version bigint, updated_by bigint, updated_at datetime);
+CREATE TABLE ai_preferences (account_id bigint PRIMARY KEY, content text, updated_at datetime);
+CREATE TABLE ai_rules (id INTEGER PRIMARY KEY AUTOINCREMENT, account_id bigint, content text, status text, version bigint, created_at datetime, published_at datetime, published_by bigint, source_rule_id bigint);
+CREATE INDEX idx_ai_rules_status ON ai_rules(status,published_at);
+CREATE TABLE ai_exports (id varchar(64) PRIMARY KEY, run_id varchar(64), format text, path text, hash text, expires_at datetime, created_at datetime);
+CREATE INDEX idx_ai_exports_run ON ai_exports(run_id);
+CREATE TABLE ai_budget_reservations (id varchar(36) PRIMARY KEY, run_id varchar(36) NOT NULL, account_id bigint NOT NULL, month varchar(7) NOT NULL, status varchar(16) NOT NULL, amount_micro bigint NOT NULL, actual_micro bigint NOT NULL DEFAULT 0, input_tokens bigint NOT NULL DEFAULT 0, output_tokens bigint NOT NULL DEFAULT 0, price_version varchar(64) NOT NULL, created_at datetime NOT NULL, updated_at datetime NOT NULL, settled_at datetime);
+CREATE INDEX idx_ai_budget_run ON ai_budget_reservations(run_id);
+CREATE INDEX idx_ai_budget_account ON ai_budget_reservations(account_id);
+CREATE INDEX idx_ai_budget_month_status ON ai_budget_reservations(month,status);
